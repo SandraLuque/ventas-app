@@ -1,0 +1,55 @@
+---
+// 📁 src/components/LogoutButton.astro
+export interface Props {
+  class?: string;
+  variant?: 'button' | 'link';
+}
+
+const { class: className = '', variant = 'button' } = Astro.props;
+---
+
+{variant === 'button' ? (
+  <button
+    type="button"
+    class={`logout-button ${className}`}
+    onclick="handleLogout()"
+  >
+    <slot>Logout</slot>
+  </button>
+) : (
+  <a
+    href="#"
+    class={`logout-link ${className}`}
+    onclick="handleLogout(); return false;"
+  >
+    <slot>Logout</slot>
+  </a>
+)}
+
+<script>
+  function handleLogout() {
+    if (confirm('Are you sure you want to logout?')) {
+      fetch('/api/auth/logout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          window.location.href = '/auth/login';
+        } else {
+          console.error('Logout failed:', data.message);
+          // Forzar redirección en caso de error
+          window.location.href = '/auth/login';
+        }
+      })
+      .catch(error => {
+        console.error('Logout error:', error);
+        // Forzar redirección en caso de error
+        window.location.href = '/auth/login';
+      });
+    }
+  }
+</script>

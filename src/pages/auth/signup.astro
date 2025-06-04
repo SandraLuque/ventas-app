@@ -1,0 +1,194 @@
+---
+// 📁 src/pages/auth/signup.astro
+import Layout from '@/layouts/Layout.astro';
+import { validateSession } from '@/lib/auth-utils';
+
+// Redirigir si ya está autenticado
+const { user } = await validateSession(Astro.cookies);
+if (user) {
+  const redirectTo = user.role === 'admin' ? '/admin/dashboard' : '/cashier/dashboard';
+  return Astro.redirect(redirectTo);
+}
+---
+
+<Layout title="Sign Up - POS System">
+  <div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8">
+      <div>
+        <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+          Create POS Account
+        </h2>
+        <p class="mt-2 text-center text-sm text-gray-600">
+          Register a new account for the POS system
+        </p>
+      </div>
+      
+      <form class="mt-8 space-y-6" id="signupForm">
+        <div class="space-y-4">
+          <div>
+            <label for="name" class="block text-sm font-medium text-gray-700">Full Name</label>
+            <input
+              id="name"
+              name="name"
+              type="text"
+              autocomplete="name"
+              required
+              class="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              placeholder="Enter your full name"
+            />
+          </div>
+          
+          <div>
+            <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
+            <input
+              id="username"
+              name="username"
+              type="text"
+              autocomplete="username"
+              required
+              class="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              placeholder="Choose a username"
+            />
+          </div>
+          
+          <div>
+            <label for="email" class="block text-sm font-medium text-gray-700">Email (Optional)</label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              autocomplete="email"
+              class="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              placeholder="Enter your email"
+            />
+          </div>
+          
+          <div>
+            <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              autocomplete="new-password"
+              required
+              class="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              placeholder="Create a password"
+            />
+          </div>
+          
+          <div>
+            <label for="role" class="block text-sm font-medium text-gray-700">Role</label>
+            <select
+              id="role"
+              name="role"
+              required
+              class="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            >
+              <option value="">Select a role</option>
+              <option value="cashier">Cashier</option>
+              <option value="admin">Administrator</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <button
+            type="submit"
+            class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            id="submitButton"
+          >
+            Create Account
+          </button>
+        </div>
+
+        <div class="text-center">
+          <a href="/auth/login" class="text-indigo-600 hover:text-indigo-500 text-sm">
+            Already have an account? Sign in
+          </a>
+        </div>
+
+        <div id="errorMessage" class="hidden mt-3 text-center text-sm text-red-600"></div>
+        <div id="successMessage" class="hidden mt-3 text-center text-sm text-green-600"></div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const form = document.getElementById('signupForm') as HTMLFormElement;
+      const submitButton = document.getElementById('submitButton') as HTMLButtonElement;
+      const errorMessage = document.getElementById('errorMessage') as HTMLDivElement;
+      const successMessage = document.getElementById('successMessage') as HTMLDivElement;
+
+      function showError(message: string) {
+        errorMessage.textContent = message;
+        errorMessage.classList.remove('hidden');
+        successMessage.classList.add('hidden');
+      }
+
+      function showSuccess(message: string) {
+        successMessage.textContent = message;
+        successMessage.classList.remove('hidden');
+        errorMessage.classList.add('hidden');
+      }
+
+      function hideMessages() {
+        errorMessage.classList.add('hidden');
+        successMessage.classList.add('hidden');
+      }
+
+      form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        hideMessages();
+
+        const formData = new FormData(form);
+        const name = formData.get('name') as string;
+        const username = formData.get('username') as string;
+        const email = formData.get('email') as string;
+        const password = formData.get('password') as string;
+        const role = formData.get('role') as string;
+
+        if (!name || !username || !password || !role) {
+          showError('Please fill in all required fields');
+          return;
+        }
+
+        submitButton.disabled = true;
+        submitButton.textContent = 'Creating Account...';
+
+        try {
+          const response = await fetch('/api/auth/signup', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              name,
+              username,
+              email: email || undefined,
+              password,
+              role,
+            }),
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            showSuccess('Account created successfully! Redirecting...');
+            setTimeout(() => {
+              window.location.href = data.redirectTo || '/dashboard';
+            }, 1000);
+          } else {
+            showError(data.message || 'Signup failed');
+          }
+        } catch (error) {
+          console.error('Signup error:', error);
+          showError('Network error. Please try again.');
+        } finally {
+          submitButton.disabled = false;
+          submitButton.textContent = 'Create Account';
+        }
+      });
+    });
+  </script>
+</Layout>

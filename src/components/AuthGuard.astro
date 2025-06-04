@@ -1,0 +1,26 @@
+---
+// 📁 src/components/AuthGuard.astro
+import type { SessionUser } from '@/types/users';
+
+export interface Props {
+  requiredRole?: 'admin' | 'cashier';
+  redirectTo?: string;
+}
+
+const { requiredRole, redirectTo = '/auth/login' } = Astro.props;
+
+// Type assertion para el user
+const user = (Astro.locals as { user?: SessionUser }).user;
+
+// Si no hay usuario, redirigir al login
+if (!user) {
+  return Astro.redirect(`${redirectTo}?returnTo=${encodeURIComponent(Astro.url.pathname)}`);
+}
+
+// Si se requiere un rol específico y el usuario no lo tiene
+if (requiredRole && user.role !== requiredRole && user.role !== 'admin') {
+  return Astro.redirect('/access-denied');
+}
+---
+
+<slot />

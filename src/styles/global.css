@@ -1,0 +1,54 @@
+@import "tailwindcss";
+@theme {
+  --font-base: 'Quicksand Variable', sans-serif;
+  --padding-wrapper: calc(var(--spacing) * 3);
+  --gap-wrapper: calc(var(--spacing) * 3);
+  --h-header: 3rem;
+
+  /* Colores Primarios */
+  --primary: oklch(0.16 0.72 210deg); /* #134f97 */
+  --primary-light: oklch(0.89 0.03 210deg); /* #e3ecfb */
+  --primary-dark: oklch(0.78 0.10 210deg); /* #c1daf6 */
+
+  /* Colores Secundarios */
+  --secondary: oklch(0.68 0.85 9deg); /* #f24738 */
+  --tertiary: oklch(0.15 0.70 160deg); /* #038c3e */
+  --accent: oklch(0.91 0.47 37deg); /* #f2aa52 */
+
+  /* Colores de Texto */
+  --text-light: oklch(0.93 0.03 55deg); /* #e3e3e3 */
+  --text-dark: oklch(0.23 0.05 35deg); /* #53575a */
+  --text-darker: oklch(0.13 0.05 35deg); /* #282d31 */
+
+  /* Colores de Fondo */
+  --bg-light: oklch(1 0.02 90deg); /* #ffffff */
+  --bg-dark: oklch(0.93 0.04 115deg); /* #eef5f9 */
+  --border-light: oklch(0.25 0.15 215deg); /* rgba(72, 94, 144, 0.16) */
+
+  /* Variables Derivadas */
+  --color-primary: var(--primary);
+  --color-primary-light: var(--primary-light);
+  --color-primary-dark: var(--primary-dark);
+  --color-secondary: var(--secondary);
+  --color-tertiary: var(--tertiary);
+  --color-accent: var(--accent);
+
+  --color-bgBody: var(--bg-dark);
+  --color-bgSecondary: var(--bg-light);
+  --color-border: var(--border-light);
+  --color-text: var(--text-dark);
+  --color-text-alt: var(--text-darker);
+}
+
+/* Base */
+@layer base {
+  html,
+  body {
+    font-family: var(--font-base);
+    background-color: var(--color-bgBody);
+    color: var(--color-text);
+    font-size: 1rem;
+    line-height: 1.5;
+    scroll-behavior: smooth;
+  }
+}
