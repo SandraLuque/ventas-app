@@ -1,7 +1,8 @@
 ---
 // 📁 src/pages/auth/login.astro
-import Layout from '@/layouts/Layout.astro';
+import LayoutAuth from '@/layouts/LayoutAuth.astro';
 import { validateSession } from '@/lib/auth-utils';
+import logoStore from '@/assets/logo.svg';
 // Redirigir si ya está autenticado
 const { user } = await validateSession(Astro.cookies);
 if (user) {
@@ -12,83 +13,99 @@ if (user) {
 const returnTo = Astro.url.searchParams.get('returnTo') || '/dashboard';
 ---
 
-<Layout title="Login - POS System">
-  <div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-md w-full space-y-8">
-      <div>
-        <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          Sign in to POS System
-        </h2>
-        <p class="mt-2 text-center text-sm text-gray-600">
-          Enter your credentials to access the system
-        </p>
-      </div>
-      
-      <form class="mt-8 space-y-6" id="loginForm">
-        <input type="hidden" name="returnTo" value={returnTo} />
-        
-        <div class="rounded-md shadow-sm -space-y-px">
-          <div>
-            <label for="username" class="sr-only">Username</label>
-            <input
-              id="username"
-              name="username"
-              type="text"
-              autocomplete="username"
-              required
-              class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-              placeholder="Username"
-            />
-          </div>
-          <div>
-            <label for="password" class="sr-only">Password</label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              autocomplete="current-password"
-              required
-              class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-              placeholder="Password"
-            />
-          </div>
-        </div>
-
-        <div class="flex items-center justify-between">
-          <div class="flex items-center">
-            <input
-              id="remember-me"
-              name="remember-me"
-              type="checkbox"
-              class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-            />
-            <label for="remember-me" class="ml-2 block text-sm text-gray-900">
-              Remember me
-            </label>
-          </div>
-        </div>
-
+<LayoutAuth title="Login - POS System">
+  <div class="min-h-screen max-h-screen flex items-center  justify-center relative ">
+    <img id="background" src={logoStore.src} alt="" fetchpriority="high" />
+    <div class="ui-card box w-sm z-10">
+      <div class="flex justify-center items-center flex-col gap-6">
         <div>
-          <button
-            type="submit"
-            class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
-            id="submitButton"
-          >
-            <span class="absolute left-0 inset-y-0 flex items-center pl-3">
-              <svg class="h-5 w-5 text-indigo-500 group-hover:text-indigo-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v7a2 2 0 01-2 2H5a2 2 0 01-2-2v-7a2 2 0 012-2z" clip-rule="evenodd" />
-              </svg>
-            </span>
-            Sign in
-          </button>
+            <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900 uppercase">
+            Iniciar sesión
+          </h2>
+            <p class="mt-2 text-center text-sm text-gray-600">
+              Introduzca sus credenciales para acceder al sistema
+            </p>
         </div>
+        <img src={logoStore.src} width="160" height="73" alt="Astro Homepage" />
+      </div>
+       <form class="mt-8 space-y-6" id="loginForm">
+      <input type="hidden" name="returnTo" value={returnTo} />
+      <div id="errorMessage" class="app-alert-error hidden text-center"></div>
+      <div id="successMessage" class="hidden mt-3 text-center text-sm text-green-600"></div>
+      <div class="rounded-md shadow-sm space-y-3">
+        <div>
+          <label for="username" class="sr-only">Username</label>
+          <input
+            id="username"
+            name="username"
+            type="text"
+            autocomplete="username"
+            required
+            class="app-input w-full"
+            placeholder="Username"
+          />
+        </div>
+        <div>
+          <label for="password" class="sr-only">Password</label>
+          <input
+            id="password"
+            name="password"
+            type="password"
+            autocomplete="current-password"
+            required
+            class="app-input w-full"
+            placeholder="Password"
+          />
+        </div>
+      </div>
 
-        <div id="errorMessage" class="hidden mt-3 text-center text-sm text-red-600"></div>
-        <div id="successMessage" class="hidden mt-3 text-center text-sm text-green-600"></div>
-      </form>
+      <div class="flex items-center justify-between">
+        <div class="flex items-center">
+          <input
+            id="remember-me"
+            name="remember-me"
+            type="checkbox"
+            class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+          />
+          <label for="remember-me" class="ml-2 block text-sm text-gray-900">
+            Remember me
+          </label>
+        </div>
+      </div>
+
+      <div>
+        <button
+          type="submit"
+          class="group relative w-full flex justify-center   app-btn-primary"
+          id="submitButton"
+        >
+          <span class="absolute left-0 inset-y-0 flex items-center pl-3">
+            <svg class="h-5 w-5 text-indigo-500 group-hover:text-indigo-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v7a2 2 0 01-2 2H5a2 2 0 01-2-2v-7a2 2 0 012-2z" clip-rule="evenodd" />
+            </svg>
+          </span>
+          Sign in
+        </button>
+      </div>
+
+      
+    </form>
     </div>
   </div>
 
+</LayoutAuth>
+<style>
+	#background {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		filter: blur(15px);
+	}
+
+	
+</style>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       const form = document.getElementById('loginForm') as HTMLFormElement;
@@ -151,7 +168,7 @@ const returnTo = Astro.url.searchParams.get('returnTo') || '/dashboard';
               window.location.href = data.redirectTo || '/dashboard';
             }, 1000);
           } else {
-            showError(data.message || 'Login failed');
+            showError(data.message || 'Credenciales Incorectas');
           }
         } catch (error) {
           console.error('Login error:', error);
@@ -163,4 +180,3 @@ const returnTo = Astro.url.searchParams.get('returnTo') || '/dashboard';
       });
     });
   </script>
-</Layout>

@@ -1,0 +1,201 @@
+---
+import type { IconName } from "@/icons/Icon"
+import { Icon } from "@/icons/Icon"
+
+const pathname = Astro.url.pathname
+const normalizedPathName = pathname.endsWith('/') && pathname.length > 1 ? pathname.slice(0, -1) : pathname
+
+const links = [
+  {
+    label: 'Dashboard',
+    href: '/dashboard',
+    icon: 'dashboard',
+  },
+  {
+    label: 'Ventas',
+    href: '/sales',
+    icon: 'sales',
+  },
+  {
+    label: 'Inventario',
+    href: '#',
+    icon: 'inventory',
+    subLinks: [
+      { label: 'Productos', href: '/inventory/products' },
+      { label: 'Categorías', href: '/inventory/categories' },
+    ],
+  },
+  {
+    label: 'Reportes',
+    href: '#',
+    icon: 'reports',
+    subLinks: [
+      { label: 'Ventas', href: '/reports/sales' },
+      { label: 'Inventario', href: '/reports/inventory' },
+    ],
+  },
+  {
+    label: 'Administración',
+    href: '#',
+    icon: 'gears',
+    subLinks: [
+      { label: 'Usuarios', href: '/admin/users' },
+      { label: 'Configuración', href: '/admin/settings' },
+    ],
+  },
+].map((link) => {
+  const isActive = normalizedPathName === link.href
+  const subLinks = link.subLinks?.map((sub) => ({
+    ...sub,
+    active: normalizedPathName === sub.href,
+  })) ?? []
+
+  const hasActiveSubLink = subLinks.some((sub) => sub.active)
+  return {
+    ...link,
+    active: isActive || hasActiveSubLink,
+    subLinks,
+  }
+})
+---
+
+<aside
+  id="sidebar"
+  class="fixed top-0 left-0 z-20 flex flex-col flex-shrink-0 hidden w-64 h-full pt-16 font-normal duration-75 lg:flex transition-width"
+  aria-label="Sidebar"
+  data-normalized-pathname={normalizedPathName}
+>
+  <div class="relative flex flex-col flex-1 min-h-0 pt-0 app-bg-primary border-r app-border">
+    <div class="flex flex-col flex-1 pt-5 pb-28 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600">
+      <div class="flex-1 px-3 space-y-1 app-bg-primary divide-y divide-gray-200  dark:divide-gray-700">
+        <ul class="pb-2 space-y-2">
+          {
+            links.map((link) => {
+              const hasSubLinks = link.subLinks && link.subLinks.length > 0
+              return (
+                <li class={`group relative ${hasSubLinks ? 'has-submenu' : ''}`}>
+                  <a
+                    href={hasSubLinks ? '#' : link.href}
+                    class={`flex items-center gap-2 rounded-sm px-2 py-1.5 font-medium transition duration-200 ${
+                      link.active 
+                        ? 'text-primary bg-zinc-200 hover:bg-zinc-900 hover:text-accent dark:bg-zinc-800' 
+                        : 'text-primary/75 hover:text-primary hover:bg-zinc-200 dark:hover:bg-zinc-800 dark:text-gray-200'
+                    }`}
+                    aria-current={link.active ? 'page' : undefined}
+                  >
+                    <Icon name={link.icon as IconName} size={20} />
+                    <span class="flex-1">{link.label}</span>
+                    {hasSubLinks && (
+                      <svg
+                        class="ml-2 h-4 w-4 transform transition-transform group-hover:rotate-90"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        aria-hidden="true"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M19 9l-7 7-7-7"
+                        />
+                      </svg>
+                    )}
+                  </a>
+
+                  {hasSubLinks && (
+                    <ul 
+                      class="relative flex max-h-0 flex-col gap-1 overflow-hidden pl-2.5 transition-all duration-300 ease-in-out before:absolute before:bottom-[10px] before:left-2 before:top-[10px] before:w-[2px] before:bg-gray-200 dark:before:bg-gray-600 before:content-['']"
+                      style={{
+                        maxHeight: link.active ? '100vh' : undefined,
+                      }}
+                    >
+                      {link.subLinks.map((subLink) => (
+                        <li>
+                          <a
+                            href={subLink.href}
+                            class={`relative block rounded-md px-2.5 py-1.5 transition-all hover:ml-1 ${
+                              subLink.active 
+                                ? 'text-primary before:bg-primary font-medium' 
+                                : 'text-gray-600 dark:text-gray-400 before:bg-gray-300 dark:before:bg-gray-500'
+                            } before:absolute before:left-0 before:top-1/2 before:h-1 before:w-1 before:-translate-y-1/2 before:rounded-full`}
+                            aria-current={subLink.active ? 'page' : undefined}
+                          >
+                            {subLink.label}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </li>
+              )
+            })
+          }
+        </ul>
+      </div>
+    </div>
+    
+    <div class="absolute bottom-0 left-0 justify-center hidden w-full p-4 space-x-4 app-bg-primary lg:flex ">
+      <button
+        type="button"
+        class="inline-flex justify-center p-2 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white"
+        aria-label="Settings"
+      >
+        <svg
+          class="w-6 h-6"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z"
+            clip-rule="evenodd"
+          />
+        </svg>
+      </button>
+    </div>
+  </div>
+</aside>
+
+<div
+  class="fixed inset-0 z-10 hidden bg-gray-900/50 dark:bg-gray-900/90"
+  id="sidebarBackdrop"
+  aria-hidden="true"
+></div>
+
+<script is:inline>
+  document.addEventListener('DOMContentLoaded', () => {
+    const sidebarLinks = document.querySelectorAll('#sidebar .group > a[href="#"]')
+    
+    sidebarLinks.forEach(link => {
+      const parent = link.closest('.group')
+      if (!parent) return
+      
+      const submenu = parent.querySelector('ul')
+      if (!submenu) return
+      
+      // Abrir submenú si contiene un enlace activo
+      const activeLink = submenu.querySelector('a[aria-current="page"]')
+      if (activeLink) {
+        submenu.style.maxHeight = submenu.scrollHeight + 'px'
+      }
+      
+      link.addEventListener('click', (e) => {
+        e.preventDefault()
+        
+        // Cerrar otros submenús
+        document.querySelectorAll('#sidebar ul').forEach(menu => {
+          if (menu !== submenu) {
+            menu.style.maxHeight = null
+          }
+        })
+        
+        // Alternar submenú actual
+        const isOpen = submenu.style.maxHeight
+        submenu.style.maxHeight = isOpen ? null : submenu.scrollHeight + 'px'
+      })
+    })
+  })
+</script>

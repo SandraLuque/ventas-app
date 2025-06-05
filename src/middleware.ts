@@ -10,7 +10,6 @@ const PUBLIC_ROUTES = new Set([
   '/auth/signup', 
   '/api/auth/signup',
   '/access-denied', // Agregar para evitar loops de redirección
-  '/', // Página de inicio (opcional, dependiendo de tu app)
 ])
 
 const ADMIN_ROUTES = new Set(['/admin', '/api/admin'])

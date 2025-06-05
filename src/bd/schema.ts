@@ -88,7 +88,7 @@ export const paymentMethods = pgTable("payment_methods", {
 export const sales = pgTable("sales", {
   id: serial("id").primaryKey(),
   saleNumber: varchar("sale_number", { length: 20 }).notNull().unique(),
-  userId: integer("user_id").notNull().references(() => users.id),
+  userId: text("user_id").notNull().references(() => users.id),
   customerName: varchar("customer_name", { length: 255 }),
   subtotal: numeric("subtotal", { precision: 10, scale: 2 }).notNull(),
   taxAmount: numeric("tax_amount", { precision: 10, scale: 2 }).default("0"),
@@ -127,6 +127,6 @@ export const inventoryMovements = pgTable("inventory_movements", {
   referenceId: integer("reference_id"),
   referenceType: varchar("reference_type", { length: 20 }),
   notes: text("notes"),
-  userId: integer("user_id").references(() => users.id),
+  userId: text("user_id").references(() => users.id),
   createdAt: timestamp("created_at").defaultNow(),
 });

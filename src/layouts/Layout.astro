@@ -1,18 +1,29 @@
 ---
+import NavBar from '@/components/app/NavBar.astro'
+import SideBar from '@/components/app/SideBar.astro'
 import '@/styles/global.css'
 import '@fontsource-variable/quicksand'
+import '@fontsource/courgette';
+const user = Astro.locals.user
 ---
 <!doctype html>
-<html lang="en">
+<html lang="en" >
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
 		<title>Astro Basics</title>
+		<script is:inline src="/scripts/theme-init.js"></script>
 	</head>
 	<body>
-		<slot />
+		<NavBar user={user} />
+		<SideBar user={user} />
+		<main class="flex pt-16 overflow-hidden">
+			<div class="relative w-full h-full overflow-y-auto lg:ml-64 min-h-screen">
+				<slot />
+			</div>
+		</main>
 	</body>
 </html>
 

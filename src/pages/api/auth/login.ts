@@ -67,9 +67,10 @@ export const POST: APIRoute = async ({ request, cookies, clientAddress }) => {
 
     // Buscar usuario
     const user = await findUserByUsername(username);
-    
+    console.log(`Intento de inicio de sesión para usuario: ${user} desde IP: ${clientIp}`);
     if (!user) {
       loginRateLimiter.recordAttempt(clientIp, false);
+      console.log(`Usuario no encontrado: ${username}`);
       return new Response(
         JSON.stringify({
           success: false,

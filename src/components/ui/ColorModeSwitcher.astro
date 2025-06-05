@@ -1,0 +1,142 @@
+---
+// src/components/ui/ColorModeSwitcher.astro
+---
+
+<button 
+  id="theme-toggle" 
+  class="
+    relative inline-flex items-center justify-center w-10 h-10 
+    rounded-lg border app-border-default
+    app-bg-card app-text-heading
+    hover:app-bg-hover
+    focus:outline-none focus:ring-2 focus:ring-blue-500 
+    transition-all duration-300
+  "
+  aria-label="Toggle theme"
+  title="Toggle theme"
+>
+  <!-- Icono de sol (modo claro) -->
+  <svg 
+    id="sun-icon" 
+    class="w-5 h-5 transition-all duration-300 transform" 
+    fill="currentColor" 
+    viewBox="0 0 20 20"
+    aria-hidden="true"
+  >
+    <path 
+      fill-rule="evenodd" 
+      d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" 
+      clip-rule="evenodd"
+    />
+  </svg>
+  
+  <!-- Icono de luna (modo oscuro) -->
+  <svg 
+    id="moon-icon" 
+    class="w-5 h-5 absolute transition-all duration-300 transform scale-0 rotate-90" 
+    fill="currentColor" 
+    viewBox="0 0 20 20"
+    aria-hidden="true"
+  >
+    <path 
+      d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"
+    />
+  </svg>
+</button>
+
+<script is:inline>
+  // Script optimizado para manejar el cambio de tema
+  (function() {
+    class ThemeManager {
+      constructor() {
+        this.button = document.getElementById('theme-toggle');
+        this.sunIcon = document.getElementById('sun-icon');
+        this.moonIcon = document.getElementById('moon-icon');
+        
+        if (this.button && this.sunIcon && this.moonIcon) {
+          this.init();
+        }
+      }
+      
+      init() {
+        // Cargar tema guardado o usar el del sistema
+        const savedTheme = localStorage.getItem('theme');
+        const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        const currentTheme = savedTheme || systemTheme;
+        
+        this.setTheme(currentTheme);
+        this.updateIcons(currentTheme);
+        
+        // Event listener para el botón
+        this.button.addEventListener('click', () => this.toggleTheme());
+        
+        // Escuchar cambios en las preferencias del sistema
+        const colorSchemeQuery = window.matchMedia('(prefers-color-scheme: dark)');
+        colorSchemeQuery.addEventListener('change', (e) => {
+          if (!localStorage.getItem('theme')) {
+            const newTheme = e.matches ? 'dark' : 'light';
+            this.setTheme(newTheme);
+            this.updateIcons(newTheme);
+          }
+        });
+      }
+      
+      getCurrentTheme() {
+        return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+      }
+      
+      setTheme(theme) {
+        if (theme === 'dark') {
+          document.documentElement.classList.add('dark');
+          document.documentElement.setAttribute('data-theme', 'dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+          document.documentElement.setAttribute('data-theme', 'light');
+        }
+      }
+      
+      toggleTheme() {
+        const currentTheme = this.getCurrentTheme();
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        
+        this.setTheme(newTheme);
+        this.updateIcons(newTheme);
+        localStorage.setItem('theme', newTheme);
+        
+        // Emitir evento personalizado
+        document.dispatchEvent(new CustomEvent('color-theme-change', {
+          detail: { theme: newTheme },
+        }));
+      }
+      
+      updateIcons(theme) {
+        const iconTransform = {
+          dark: {
+            sun: ['add', 'scale-0', 'rotate-90'],
+            moon: ['remove', 'scale-0', 'rotate-90'],
+          },
+          light: {
+            sun: ['remove', 'scale-0', 'rotate-90'],
+            moon: ['add', 'scale-0', 'rotate-90'],
+          },
+        };
+        
+        const actions = iconTransform[theme];
+        actions.sun[0] === 'add' 
+          ? this.sunIcon.classList.add(...actions.sun.slice(1))
+          : this.sunIcon.classList.remove(...actions.sun.slice(1));
+        
+        actions.moon[0] === 'add' 
+          ? this.moonIcon.classList.add(...actions.moon.slice(1))
+          : this.moonIcon.classList.remove(...actions.moon.slice(1));
+      }
+    }
+    
+    // Inicialización optimizada
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+      new ThemeManager();
+    } else {
+      document.addEventListener('DOMContentLoaded', () => new ThemeManager());
+    }
+  })();
+</script>

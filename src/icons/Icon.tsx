@@ -12,6 +12,7 @@ import {
   SearchNotFoundIcon,
   SearchIcon,
   ChevronLeftIcon,
+  ChevronDownIcon,
   FilePdfIcon,
   FileExcelIcon,
   TrashIcon,
@@ -20,6 +21,7 @@ import {
   SaveIcon,
   EllipsisIcon,
   GearsIcon,
+  DashboardIcon,
 } from './Icons'
 
 const iconMap = {
@@ -29,13 +31,14 @@ const iconMap = {
   reports: ReportsIcon,
   products: ProductsIcon,
   inventory: InventoryIcon,
-  salesl: SalesIcon,
-  uerserFemale: UserFemaleIcon,
+  sales: SalesIcon, 
+  userFemale: UserFemaleIcon, 
   userMale: UserMaleIcon,
   search: SearchIcon,
   searchProduct: SearchProductIcon,
   searchNotFound: SearchNotFoundIcon,
   chevronLeft: ChevronLeftIcon,
+  chevronDown: ChevronDownIcon,
   filePdf: FilePdfIcon,
   fileExcel: FileExcelIcon,
   trash: TrashIcon,
@@ -44,6 +47,7 @@ const iconMap = {
   save: SaveIcon,
   ellipsis: EllipsisIcon,
   gears: GearsIcon,
+  dashboard: DashboardIcon,
 }
 
 export type IconName = keyof typeof iconMap
